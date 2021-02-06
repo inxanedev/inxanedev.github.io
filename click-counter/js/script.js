@@ -11,3 +11,4 @@ let clickCallback = (ev) => {
 
 document.addEventListener("click", clickCallback);
 document.addEventListener("contextmenu", clickCallback);
+window.addEventListener("wheel", clickCallback);

@@ -1,0 +1,11 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#main {
+	font-family: monospace;
+	font-size: 1.5rem;
+	user-select: none;
+}

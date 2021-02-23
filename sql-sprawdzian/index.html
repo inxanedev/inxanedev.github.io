@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Sprawdzian</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <table>
+        <tr>
+            <td>Wyswietlenie wszystkich klientow</td>
+            <td>
+                SELECT * FROM klienci;
+            </td>
+        </tr>
+        <tr>
+            <td>Wyswietlenie wszystkich klientow o imieniu Jan</td>
+            <td>
+                SELECT * FROM klienci WHERE imie = "Jan";
+            </td>
+        </tr>
+        <tr>
+            <td>Wyswietlenie klienta o id 4</td>
+            <td>
+                SELECT * FROM klienci WHERE idklienta = 4;
+            </td>
+        </tr>
+        <tr>
+            <td>Dodanie nowego rekordu do tabeli klienci. ID jest AUTO_INCREMENT wiec mozemy dac NULL jako id, wtedy samo sie doda.</td>
+            <td>
+                INSERT INTO klienci VALUES (NULL, "Maksymilian", "Przytulski", "Podlasie"); <br/>
+                SELECT * FROM klienci;
+            </td>
+        </tr>
+        <tr>
+            <td>Usuniecie rekordu klienta o id 10.</td>
+            <td>
+                DELETE FROM klienci WHERE idklienta = 10;<br/>
+                SELECT * FROM klienci;
+            </td>
+        </tr>
+        <tr>
+            <td>Usuniecie osoby o imieniu Agnieszka Jankowska</td>
+            <td>
+                DELETE FROM klienci WHERE imie = "Agnieszka" AND nazwisko = "Jankowska";<br/>
+                SELECT * FROM klienci;
+            </td>
+        </tr>
+        <tr>
+            <td>Sortowanie rekordow po imieniu alfabetycznie, od A do Z</td>
+            <td>
+                SELECT * FROM klienci ORDER BY imie ASC;
+            </td>
+        </tr>
+        <tr>
+            <td>Wybieranie poszczegolnych kolumn ktore chcemy wyciagnac zamiast calego rekordu:</td>
+            <td>
+                SELECT imie, nazwisko FROM klienci WHERE miejscowosc = "Katowice";
+            </td>
+        </tr>
+        <tr>
+            <td>Limitowanie ilosci rekordow</td>
+            <td>
+                SELECT * FROM klienci LIMIT 1;
+            </td>
+        </tr>
+        <tr>
+            <td>Wybranie imie, nazwisko oraz miejscowosc klienta z alfabetycznie pierwszym imieniem</td>
+            <td>
+                SELECT imie, nazwisko, miejscowosc FROM klienci ORDER BY imie ASC LIMIT 1;
+            </td>
+        </tr>
+        <tr>
+            <td>Wybranie klientow ktorych imie zaczyna sie na litere M</td>
+            <td>
+                SELECT * FROM klienci WHERE imie LIKE "m%";
+            </td>
+        </tr>
+        <tr>
+            <td>Dodawanie wiele rekordow w jednym INSERTcie</td>
+            <td>
+                INSERT INTO klienci VALUES<br/>
+                    (NULL, "Damian", "Koczyn", "Słupsk"),<br>
+                    (NULL, "Maksymilian", "Przytulski", "Pustynia");<br>
+                <br>
+                SELECT * FROM klienci;<br>
+            </td>
+        </tr>
+        <tr>
+            <td>Wybranie rekordow w tabeli zamowień które juz zostaly wyslane</td>
+            <td>
+                SELECT * FROM zamowienia WHERE status = "wyslano";
+            </td>
+        </tr>
+        <tr>
+            <td>Wybranie rekordow w tabeli ksiazki ktore maja w tytule PHP</td>
+            <td>
+                SELECT * FROM ksiazki WHERE tytul LIKE "%PHP%";
+            </td>
+        </tr>
+        <tr>
+            <td>Wybranie ksiazek ktore sa tańsze niż 40 zł.</td>
+            <td>
+                SELECT * FROM ksiazki WHERE cena < 40;
+            </td>
+        </tr>
+        <tr>
+            <td>Obliczenie sredniej ceny wszystkich ksiazek</td>
+            <td>
+                SELECT AVG(cena) FROM ksiazki;
+            </td>
+        </tr>
+        <tr>
+            <td>Zapytanie ktore wyswietla ile rekordow jest w tabeli klienci</td>
+            <td>
+                SELECT COUNT(idklienta) FROM klienci;
+            </td>
+        </tr>
+        <tr>
+            <td>Ile kosztuja razem wszystkie ksiazki w ksiegarni</td>
+            <td>
+                SELECT SUM(cena) FROM ksiazki;
+            </td>
+        </tr>
+        <tr>
+            <td>Ups! Imie Tomka Mazura tak naprawde jest Tomek MazurCZYK.</td>
+            <td>
+                UPDATE klienci SET nazwisko = "Mazurczyk" WHERE idklienta = 5;<br>
+                SELECT * FROM klienci;<br>
+            </td>
+        </tr>
+        <tr>
+            <td>Wyswietl wszystkie zamowienia stworzone po 20stym pazdziernika</td>
+            <td>
+                SELECT * FROM zamowienia WHERE data > "2014-10-20";
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,150 @@
+* {
+    font-family: monospace;
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+body {
+    background-color: #2e2e2e;
+}
+
+#header {
+    padding-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#dictionary-container {
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    padding: 5px;
+    height: 350px;
+    overflow: scroll;
+    border: 1px solid white;
+}
+
+.dictionary-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+    font-size: 30px;
+}
+
+.arrow {
+    padding-left: 10px;
+    padding-right: 8px;
+}
+
+.number {
+    margin-left: 5px;
+}
+
+.dictionary-item input {
+    width: 30%;
+    height: 50px;
+    margin-left: 5px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.removeButton {
+    width: 40px;
+    height: 40px;
+    background: #e74c3c;
+    font-size: 25px;
+    border: none;
+    border-radius: 5px;
+}
+
+#newWord {
+    width: 250px;
+    height: 50px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+#bottom {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#saveButtons {
+    margin-top: 10px;
+    display: flex;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+}
+
+#saveButton {
+    width: 50%;
+    height: 50px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+#loadButton {
+    width: 50%;
+    height: 50px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+#playButton {
+    margin-top: 30px;
+    width: 300px;
+    height: 50px;
+    background: #2ecc71;
+    border-radius: 5px;
+    border: none;
+}
+
+#reverseButton {
+    margin-top: 10px;
+    width: 250px;
+    height: 50px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+#importButtons {
+    margin-top: 10px;
+    display: flex;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+}
+
+#exportButton {
+    width: 50%;
+    height: 50px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+
+#importButton {
+    width: 50%;
+    height: 50px;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-left: 5px;
+}

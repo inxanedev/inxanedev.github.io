@@ -40,3 +40,7 @@ body {
     border: none;
     border-radius: 5px;
 }
+
+#question-prompt {
+    text-align: center;
+}

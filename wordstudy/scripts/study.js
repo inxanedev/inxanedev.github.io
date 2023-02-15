@@ -8,12 +8,26 @@ questionInput.addEventListener("keypress", event => {
 })
 
 let dictionary = localStorage.getItem("dictionary");
+let randomlyReverse = localStorage.getItem("randomlyReverse") === "true";
+
+if (randomlyReverse == null) {
+    randomlyReverse = false;
+}
 
 let currentQuestion = 0;
 
+let reversed = false;
+
 function setupQuestion(currentQuestion) {
     questionInput.value = "";
-    questionPrompt.textContent = `What is ${dictionary["list"][currentQuestion]["from"]}?`;
+    questionPrompt.textContent = `What is ${dictionary["list"][currentQuestion][(reversed ? "to" : "from")]}?`;
+}
+
+function reverse() {
+    if (randomlyReverse) {
+        // https://stackoverflow.com/a/36756480
+        reversed = Math.random() < 0.5;
+    }
 }
 
 
@@ -29,13 +43,16 @@ if (dictionary == null) {
     dictionary = JSON.parse(dictionary);
     dictionary["list"] = _.shuffle(dictionary["list"]);
     console.log(dictionary["list"]);
+
+    reverse();
+
     setupQuestion(currentQuestion);
 }
 
 function submit() {
     Swal.fire({
         title: "The correct answer was...",
-        text: `${dictionary["list"][currentQuestion]["to"]}!`,
+        text: `${dictionary["list"][currentQuestion][(reversed ? "from" : "to")]}!`,
         icon: "info"
     }).then(result => {
         currentQuestion++;

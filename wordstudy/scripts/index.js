@@ -204,3 +204,7 @@ document.getElementById("importButton").addEventListener("click", () => {
         });
     });
 });
+
+document.getElementById("randomReverseCheckbox").addEventListener("change", e => {
+    localStorage.setItem("randomlyReverse", e.currentTarget.checked.toString());
+});

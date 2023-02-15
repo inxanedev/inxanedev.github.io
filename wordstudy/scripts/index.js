@@ -12,7 +12,7 @@
     for (let i = 0; i < dictionary_json["list"].length; i++) {
         let item = dictionary_json["list"][i];
         container.innerHTML +=
-            `<div class="dictionary-item"><button class="removeButton" onclick="remove(${i})">X</button><input value="${item['from']}"/><span class="arrow">-></span><input value="${item['to']}"/></div>`;
+            `<div class="dictionary-item"><button class="removeButton" onclick="remove(${i})">X</button><input value="${_.escape(item['from'])}"/><span class="arrow">-></span><input value="${_.escape(item['to'])}"/></div>`;
     }
 
     if (localStorage.getItem("randomlyReverse") == null) {
@@ -130,7 +130,7 @@ document.getElementById("loadButton").addEventListener("click", () => {
         for (let i = 0; i < dictionary_json["list"].length; i++) {
             let item = dictionary_json["list"][i];
             container.innerHTML +=
-                `<div class="dictionary-item"><button class="removeButton" onclick="remove(${i})">X</button><input value="${item['from']}"/><span class="arrow">-></span><input value="${item['to']}"/></div>`;
+                `<div class="dictionary-item"><button class="removeButton" onclick="remove(${i})">X</button><input value="${_.escape(item['from'])}"/><span class="arrow">-></span><input value="${_.escape(item['to'])}"/></div>`;
         }
         });
 

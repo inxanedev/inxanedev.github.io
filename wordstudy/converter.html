@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WordStudy - Converter</title>
+        <link rel="stylesheet" href="./css/converter.css">
+        <script src="scripts/converter.js" defer></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+        <div id="main">
+            <p>This utility will allow you to convert a dictionary in <i>a - b format</i>, to a valid WordStudy dictionary.</p>
+            <p>Every line should be one entry, in a - b format. For example "apple - jabłko", <i>without the quotes</i> of course.</p>
+            <p>Then, click the Convert button below the textbox, and copy the generated WordStudy dictionary.</p>
+            <p>Once you do, head over to the main WordStudy page, and <i>import</i> the copied dictionary.</p>
+            <p style="margin-top: 15px"><span style="color: red">IMPORTANT:</span> If you'd like to use the hyphen (-) and make the converter not treat it as if it was the</p>
+            <p>separator of the entry, put a backslash before the hyphen, like so: \-</p>
+
+            <textarea id="textarea"></textarea>
+
+            <button id="convertButton">Convert</button>
+        </div>
+    </body>
+</html>

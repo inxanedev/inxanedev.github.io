@@ -65,6 +65,9 @@ function submit() {
                 window.location = "index.html";
             });
         }
+
+        reverse();
+
         setupQuestion(currentQuestion);
     });
 }

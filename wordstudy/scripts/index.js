@@ -14,6 +14,8 @@
         container.innerHTML +=
             `<div class="dictionary-item"><button class="removeButton" onclick="remove(${i})">X</button><input value="${item['from']}"/><span class="arrow">-></span><input value="${item['to']}"/></div>`;
     }
+
+    document.getElementById("randomReverseCheckbox").checked = localStorage.getItem("randomlyReverse") === "true";
 })();
 
 function orderContainer(container) {

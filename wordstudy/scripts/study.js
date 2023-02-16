@@ -18,7 +18,6 @@ function setupQuestion(currentQuestion) {
 
 function reverse() {
     if (randomlyReverse) {
-        // https://stackoverflow.com/a/36756480
         reversed = Math.random() < 0.5;
     }
 }

@@ -4,6 +4,8 @@ function unescapeHyphenReplacements(text) {
     return text.replaceAll(hyphenReplacement, "-");
 }
 
+document.getElementById("textarea").value = "apple - jabłko\ncarrot - marchewka";
+
 document.getElementById("convertButton").addEventListener("click", () => {
     let text = document.getElementById("textarea").value;
 

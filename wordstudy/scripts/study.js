@@ -13,7 +13,7 @@ let questionsRight = 0;
 let reversed = false;
 
 function setupQuestion(currentQuestion) {
-    questionPrompt.textContent = `What is ${dictionary["list"][currentQuestion][(reversed ? "to" : "from")]}?`;
+    questionPrompt.textContent = `(${currentQuestion + 1}/${dictionary["list"].length}) ${dictionary["list"][currentQuestion][(reversed ? "to" : "from")]}?`;
 }
 
 function reverse() {

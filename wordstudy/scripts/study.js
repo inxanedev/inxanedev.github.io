@@ -13,7 +13,7 @@ let questionsRight = 0;
 let reversed = false;
 
 function setupQuestion(currentQuestion) {
-    questionPrompt.textContent = `(${currentQuestion + 1}/${dictionary["list"].length}) ${dictionary["list"][currentQuestion][(reversed ? "to" : "from")]}?`;
+    questionPrompt.innerHTML = `(${currentQuestion + 1}/${dictionary["list"].length})<br/><br/>${_.escape(dictionary["list"][currentQuestion][(reversed ? "to" : "from")])}?`;
 }
 
 function reverse() {
@@ -44,7 +44,7 @@ if (dictionary == null) {
 function submit() {
     Swal.fire({
         title: "The correct answer was...",
-        html: `${dictionary["list"][currentQuestion][(reversed ? "from" : "to")]}!<br><br><h2 style="color: black">Did you get it right?</h2>`,
+        html: `${_.escape(dictionary["list"][currentQuestion][(reversed ? "from" : "to")])}!<br><br><h2 style="color: black">Did you get it right?</h2>`,
         showDenyButton: true,
         denyButtonText: "No",
         confirmButtonText: "Yes",

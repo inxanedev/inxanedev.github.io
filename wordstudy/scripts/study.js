@@ -1,11 +1,4 @@
 let questionPrompt = document.getElementById("question-prompt");
-let questionInput = document.getElementById("question-input");
-
-questionInput.addEventListener("keypress", event => {
-    if (event.key == "Enter") {
-        document.getElementById("submit-button").click();
-    }
-})
 
 let dictionary = localStorage.getItem("dictionary");
 let randomlyReverse = localStorage.getItem("randomlyReverse") === "true";
@@ -15,11 +8,11 @@ if (randomlyReverse == null) {
 }
 
 let currentQuestion = 0;
+let questionsRight = 0;
 
 let reversed = false;
 
 function setupQuestion(currentQuestion) {
-    questionInput.value = "";
     questionPrompt.textContent = `What is ${dictionary["list"][currentQuestion][(reversed ? "to" : "from")]}?`;
 }
 
@@ -52,14 +45,22 @@ if (dictionary == null) {
 function submit() {
     Swal.fire({
         title: "The correct answer was...",
-        text: `${dictionary["list"][currentQuestion][(reversed ? "from" : "to")]}!`,
+        html: `${dictionary["list"][currentQuestion][(reversed ? "from" : "to")]}!<br><br><h2 style="color: black">Did you get it right?</h2>`,
+        showDenyButton: true,
+        denyButtonText: "No",
+        confirmButtonText: "Yes",
         icon: "info"
     }).then(result => {
         currentQuestion++;
+
+        if (result.isConfirmed) {
+            questionsRight++;
+        }
+
         if (dictionary["list"].length == currentQuestion) {
             Swal.fire({
                 title: "You've completed every question!",
-                text: "Going back to main page...",
+                text: `You got ${questionsRight} out of ${dictionary["list"].length} correct! That's ${(questionsRight / dictionary["list"].length) * 100}% correct.`,
                 icon: "success"
             }).then(result => {
                 window.location = "index.html";

@@ -22,7 +22,7 @@ body {
 	text-align: center;
 }
 
-#question-input {
+/* #question-input {
     width: 50%;
     margin-top: 25px;
     height: 50px;
@@ -30,7 +30,7 @@ body {
     border: 1px solid white;
     border-radius: 5px;
     text-align: center;
-}
+} */
 
 #submit-button {
     margin-top: 25px;

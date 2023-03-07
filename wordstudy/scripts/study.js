@@ -68,7 +68,7 @@ function submit() {
         if (dictionary["list"].length == currentQuestion) {
             Swal.fire({
                 title: "You've completed every question!",
-                text: `You got ${questionsRight} out of ${dictionary["list"].length} correct! That's ${(questionsRight / dictionary["list"].length) * 100}% correct.`,
+                text: `You got ${questionsRight} out of ${dictionary["list"].length} correct! That's ${((questionsRight / dictionary["list"].length) * 100).toFixed(2)}% correct.`,
                 icon: "success"
             }).then(result => {
                 window.location = "index.html";

@@ -1,5 +1,13 @@
 let questionPrompt = document.getElementById("question-prompt");
 
+let questionInput = document.getElementById("question-input");
+
+questionInput.addEventListener("keypress", event => {
+    if (event.key == "Enter") {
+        document.getElementById("submit-button").click();
+    }
+})
+
 let dictionary = localStorage.getItem("dictionary");
 let randomlyReverse = localStorage.getItem("randomlyReverse") === "true";
 
@@ -13,6 +21,7 @@ let questionsRight = 0;
 let reversed = false;
 
 function setupQuestion(currentQuestion) {
+    questionInput.value = "";
     questionPrompt.innerHTML = `(${currentQuestion + 1}/${dictionary["list"].length})<br/><br/>${_.escape(dictionary["list"][currentQuestion][(reversed ? "to" : "from")])}?`;
 }
 

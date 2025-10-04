@@ -8,21 +8,30 @@ html, body {
 * {
     margin: 0;
     padding: 0;
-    font-family: "Bellefair", serif;
+    font-family: monospace;
     font-weight: 400;
     font-style: normal;
 }
 
 body {
-    background-image: url("../assets/back.gif");
-    background-size: 100% 100%;
-
-    color: black;
+    background-color: black;
+    color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-size: 3em;
+}
+
+#video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    transform: scale(1.2);
+    opacity: 0.5;
 }
 
 #links {

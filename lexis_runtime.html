@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexis API Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --highlight: #1f6feb;
+            --function-color: #d2a8ff;
+            --table-color: #79c0ff;
+            --string-color: #a5d6ff;
+            --number-color: #79c0ff;
+            --userdata-color: #ffa657;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, var(--accent), var(--function-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .search-box {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+        }
+
+        .nav-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .nav-item {
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .nav-item.active {
+            background: var(--highlight);
+            color: white;
+        }
+
+        .nav-item .type-badge {
+            font-size: 9px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .type-function { background: rgba(210, 168, 255, 0.2); color: var(--function-color); }
+        .type-table { background: rgba(121, 192, 255, 0.2); color: var(--table-color); }
+        .type-string { background: rgba(165, 214, 255, 0.2); color: var(--string-color); }
+        .type-number { background: rgba(121, 192, 255, 0.2); color: var(--number-color); }
+        .type-userdata { background: rgba(255, 166, 87, 0.2); color: var(--userdata-color); }
+        .type-boolean { background: rgba(121, 192, 255, 0.2); color: var(--number-color); }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .content-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .content-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .property-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .property-item {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .property-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .property-item.clickable {
+            cursor: pointer;
+        }
+
+        .property-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+        }
+
+        .property-type {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .property-value {
+            margin-top: 8px;
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 64px 32px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-item {
+            background: var(--bg-tertiary);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <h1>🎮 Lexis API</h1>
+                <p>Complete Runtime Documentation</p>
+            </div>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search API..." id="searchInput">
+            </div>
+            <div class="nav-list" id="navList"></div>
+        </div>
+        <div class="main-content" id="mainContent">
+            <div class="empty-state">
+                <h2>Welcome to Lexis API Browser</h2>
+                <p>Select an item from the sidebar to view details</p>
+                <div class="stats" id="stats"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Parse the actual dump with proper indentation handling
+        function parseRealDump(text) {
+            const lines = text.split('\n');
+            const root = {};
+            const stack = [{indent: -1, obj: root, path: []}];
+            
+            for (let line of lines) {
+                if (!line.trim()) continue;
+                
+                const indent = line.search(/\S/);
+                const trimmed = line.trim();
+                
+                // Extract name, removing brackets if present
+                let name = trimmed.split(/\s+/)[0].replace(/^\[|\]$/g, '');
+                
+                // Skip metadata lines
+                if (name.startsWith('(') || name.includes('metatable')) continue;
+                
+                // Determine type and value
+                let type, value;
+                if (trimmed.includes('<function')) {
+                    type = 'function';
+                    value = trimmed.match(/<function[^>]*>/)?.[0] || 'function';
+                } else if (trimmed.includes('(table)') || trimmed.endsWith('table')) {
+                    type = 'table';
+                    value = null;
+                } else if (trimmed.includes('userdata:')) {
+                    type = 'userdata';
+                    value = trimmed.match(/userdata:\s*\S+/)?.[0];
+                } else if (trimmed.includes('(string)')) {
+                    type = 'string';
+                    const match = trimmed.match(/"([^"]*)"/);
+                    value = match ? match[1] : '';
+                } else if (trimmed.includes('(number)')) {
+                    type = 'number';
+                    const parts = trimmed.split(/\s+/);
+                    value = parts[parts.length - 1];
+                } else if (trimmed.includes('(function)')) {
+                    type = 'function';
+                    value = 'function';
+                } else if (trimmed === 'true' || trimmed === 'false') {
+                    type = 'boolean';
+                    value = trimmed;
+                } else {
+                    // Default handling
+                    const parts = trimmed.split(/\s+/);
+                    if (parts.length > 1 && parts[1].startsWith('(')) {
+                        type = parts[1].replace(/[()]/g, '');
+                        value = parts.slice(2).join(' ');
+                    } else {
+                        continue;
+                    }
+                }
+                
+                // Pop stack to correct level
+                while (stack.length > 1 && indent <= stack[stack.length - 1].indent) {
+                    stack.pop();
+                }
+                
+                const parent = stack[stack.length - 1];
+                const newPath = [...parent.path, name];
+                
+                if (type === 'table') {
+                    const newObj = {};
+                    parent.obj[name] = {
+                        _type: 'table',
+                        _value: null,
+                        _children: newObj,
+                        _path: newPath.join('.')
+                    };
+                    stack.push({indent, obj: newObj, path: newPath});
+                } else {
+                    parent.obj[name] = {
+                        _type: type,
+                        _value: value,
+                        _path: newPath.join('.')
+                    };
+                }
+            }
+            
+            return root;
+        }
+
+        // Flatten for easier navigation
+        function flattenAPI(obj, result = {}, path = '') {
+            for (let key in obj) {
+                if (key.startsWith('_')) continue;
+                
+                const item = obj[key];
+                const fullPath = path ? `${path}.${key}` : key;
+                
+                result[fullPath] = {
+                    name: key,
+                    type: item._type,
+                    value: item._value,
+                    path: fullPath,
+                    parent: path || null
+                };
+                
+                if (item._type === 'table' && item._children) {
+                    flattenAPI(item._children, result, fullPath);
+                }
+            }
+            return result;
+        }
+
+        // The actual dump from the file
+        const DUMP_TEXT = `__scapi_account (table)
+  (metatable)
+  (metatable of __scapi_account) (table)
+    [__eq] = <function [C]:-1 (...)>
+    __eq (function)
+    [class_check] = userdata: 00007FF6F42194A0
+    class_check (userdata)
+scapi (table)
+  [query] = <function [C]:-1 (...)>
+  query (function)
+file (table)
+  [exists] = <function [C]:-1 (...)>
+  exists (function)
+  [remove] = <function [C]:-1 (...)>
+  remove (function)
+  [open] = <function [C]:-1 (...)>
+  open (function)
+gui (table)
+  [rect] = <function [C]:-1 (...)>
+  rect (function)
+  [image_rotated] = <function [C]:-1 (...)>
+  image_rotated (function)
+  [rounding] = table: 00000207F29C17B0
+  rounding (table)
+    [bottom_left] = 64
+    bottom_left (number)
+    [top_right] = 32
+    top_right (number)
+    [top_left] = 16
+    top_left (number)
+    [bottom_right] = 128
+    bottom_right (number)
+  [text_size] = <function [C]:-1 (...)>
+  text_size (function)
+  [line] = <function [C]:-1 (...)>
+  line (function)
+  [justify] = table: 00000207F29C1A30
+  justify (table)
+    [center] = 2
+    center (number)
+    [right] = 1
+    right (number)
+    [left] = 0
+    left (number)
+  [pop_clip] = <function [C]:-1 (...)>
+  pop_clip (function)
+  [push_clip] = <function [C]:-1 (...)>
+  push_clip (function)
+  [load_image] = <function [C]:-1 (...)>
+  load_image (function)
+  [text] = <function [C]:-1 (...)>
+  text (function)
+  [image] = <function [C]:-1 (...)>
+  image (function)
+  [image_rounded] = <function [C]:-1 (...)>
+  image_rounded (function)
+  [circle] = <function [C]:-1 (...)>
+  circle (function)
+invoker (table)
+  [call] = <function [C]:-1 (...)>
+  call (function)
+players (table)
+  [get] = <function [C]:-1 (...)>
+  get (function)
+  [target] = <function [C]:-1 (...)>
+  target (function)
+  [list] = <function [C]:-1 (...)>
+  list (function)
+  [me] = <function [C]:-1 (...)>
+  me (function)
+  [is_target_session] = <function [C]:-1 (...)>
+  is_target_session (function)
+pools (table)
+  [ped] = <function [C]:-1 (...)>
+  ped (function)
+  [object] = <function [C]:-1 (...)>
+  object (function)
+  [weapon] = <function [C]:-1 (...)>
+  weapon (function)
+  [vehicle] = <function [C]:-1 (...)>
+  vehicle (function)
+input (table)
+  [pad] = <function [C]:-1 (...)>
+  pad (function)
+  [key] = <function [C]:-1 (...)>
+  key (function)
+game (table)
+  [state] = <function [C]:-1 (...)>
+  state (function)
+  [send_friend_request] = <function [C]:-1 (...)>
+  send_friend_request (function)
+  [net_obj_from_id] = <function [C]:-1 (...)>
+  net_obj_from_id (function)
+  [invite_rockstar_id] = <function [C]:-1 (...)>
+  invite_rockstar_id (function)
+  [net_obj_from_entity] = <function [C]:-1 (...)>
+  net_obj_from_entity (function)
+  [is_session_free_roam] = <function [C]:-1 (...)>
+  is_session_free_roam (function)
+  [is_transaction_busy] = <function [C]:-1 (...)>
+  is_transaction_busy (function)
+  [get_model_info] = <function [C]:-1 (...)>
+  get_model_info (function)
+  [sync_tree] = <function [C]:-1 (...)>
+  sync_tree (function)
+  [host] = <function [C]:-1 (...)>
+  host (function)
+  [guid_from_entity] = <function [C]:-1 (...)>
+  guid_from_entity (function)
+  [entity_from_guid] = <function [C]:-1 (...)>
+  entity_from_guid (function)
+  [update_net_obj_owner] = <function [C]:-1 (...)>
+  update_net_obj_owner (function)
+  [is_sc_ui_showing] = <function [C]:-1 (...)>
+  is_sc_ui_showing (function)
+  [basket_transaction] = <function [C]:-1 (...)>
+  basket_transaction (function)
+  [in_game] = <function [C]:-1 (...)>
+  in_game (function)
+  [resolution] = <function [C]:-1 (...)>
+  resolution (function)
+  [delta] = <function [C]:-1 (...)>
+  delta (function)
+menu (table)
+  [type] = table: 00000207F2A206B0
+  type (table)
+    [toggle] = 3
+    toggle (number)
+    [press] = 2
+    [scroll] = 1
+  [player_root] = <function [C]:-1 (...)>
+  player_root (function)
+  [root] = <function [C]:-1 (...)>
+  root (function)
+  [flags] = table: 00000207F2A20C70
+  flags (table)
+    [risky] = 67108864
+    risky (number)
+    [in_game] = 1
+    [host_only] = 2048
+    host_only (number)
+    [scr_host_only] = 4096
+    scr_host_only (number)
+    [hotkey] = 16
+  [event] = table: 00000207F2A209F0
+  event (table)
+    [enter] = 3
+    [click] = 0
+    [enter_dx] = 4
+    enter_dx (number)
+    [leave] = 5
+    leave (number)
+    [click_dx] = 1
+    [leave_dx] = 6
+    leave_dx (number)
+util (table)
+  [create_thread] = <function [C]:-1 (...)>
+  create_thread (function)
+  [yield] = <function [C]:-1 (...)>
+  yield (function)
+  [remove_thread] = <function [C]:-1 (...)>
+  remove_thread (function)
+request (table)
+  [control] = <function [C]:-1 (...)>
+  control (function)
+  [weapon] = <function [C]:-1 (...)>
+  weapon (function)
+  [particle] = <function [C]:-1 (...)>
+  particle (function)
+  [anim] = <function [C]:-1 (...)>
+  anim (function)
+  [model] = <function [C]:-1 (...)>
+  model (function)
+  [dict] = <function [C]:-1 (...)>
+  dict (function)
+script (table)
+  [patch] = <function [C]:-1 (...)>
+  patch (function)
+  [locals] = <function [C]:-1 (...)>
+  locals (function)
+  [globals] = <function [C]:-1 (...)>
+  globals (function)
+  [running] = <function [C]:-1 (...)>
+  running (function)
+  [host] = <function [C]:-1 (...)>
+  host (function)
+  [program] = <function [C]:-1 (...)>
+  program (function)
+  [tunables] = <function [C]:-1 (...)>
+  tunables (function)
+  [call] = <function [C]:-1 (...)>
+  call (function)
+notify (table)
+  [clear] = <function [C]:-1 (...)>
+  clear (function)
+  [push] = <function [C]:-1 (...)>
+  push (function)
+  [icon] = table: 00000207F29BD030
+  icon (table)
+    [join_blocking] = 11
+    join_blocking (number)
+    [protections] = 4
+    [player_spawn] = 8
+    [player_join] = 2
+    [tracking] = 12
+    tracking (number)
+    [modder] = 1
+    [info] = 0
+    [join_failed] = 10
+    join_failed (number)
+    [spoofing] = 9
+    spoofing (number)
+    [hotkey] = 6
+    [player_leave] = 3
+    [hazard] = 7
+    hazard (number)
+    [spawner] = 5
+memory (table)
+  [size] = <function [C]:-1 (...)>
+  size (function)
+  [scan] = <function [C]:-1 (...)>
+  scan (function)
+  [alloc] = <function [C]:-1 (...)>
+  alloc (function)
+  [base] = <function [C]:-1 (...)>
+  base (function)
+events (table)
+  [get] = <function [C]:-1 (...)>
+  get (function)
+  [unsubscribe] = <function [C]:-1 (...)>
+  unsubscribe (function)
+  [subscribe] = <function [C]:-1 (...)>
+  subscribe (function)
+  [event] = table: 00000207F29BFAB0
+  event (table)
+    [player_flagged] = 2
+    [player_leave] = 1
+    [player_join] = 0
+    [log] = 3
+http (table)
+  [fetch] = <function [C]:-1 (...)>
+  fetch (function)
+account (table)
+  [stats] = <function [C]:-1 (...)>
+  stats (function)
+  [character] = <function [C]:-1 (...)>
+  character (function)
+  [rockstar_id] = <function [C]:-1 (...)>
+  rockstar_id (function)
+  [name] = <function [C]:-1 (...)>
+  name (function)
+this (table)
+  [unload] = <function [C]:-1 (...)>
+  unload (function)
+  [permissions] = <function [C]:-1 (...)>
+  permissions (function)
+json (table)
+  [from_table] = <function [C]:-1 (...)>
+  from_table (function)
+  [to_table] = <function [C]:-1 (...)>
+  to_table (function)
+paths (table)
+  [cheat] = "C:\\Users\\inxan\\Lexis"
+  cheat (string)
+  [game] = "C:\\Users\\inxan\\Lexis\\Grand Theft Auto V"
+  game (string)
+  [script] = "C:\\Users\\inxan\\Lexis\\Grand Theft Auto V\\scripts\\\\"
+  script (string)
+permission (table)
+  [stat_read] = 1024
+  stat_read (number)
+  [natives] = 1
+  [local_read] = 8
+  local_read (number)
+  [global_read] = 2
+  [transactions] = 4096
+  [memory_write] = 64
+  [stat_write] = 1024
+  [file_write] = 512
+  file_write (number)
+  [memory_read] = 32
+  [file_read] = 256
+  file_read (number)
+  [global_write] = 4
+  [local_write] = 16
+  [https] = 128
+pointer_float (function)
+pointer_int (function)
+pointer_bool (function)
+pointer_scr_array (function)
+memory_address (function)
+color (function)
+scr_vec3 (function)
+vec3 (function)
+vec2 (function)
+joaat (function)
+regex (function)
+loadfile (function)
+print (function)
+pcall (function)
+select (function)
+rawlen (function)
+require (function)
+tostring (function)
+pairs (function)
+next (function)
+tonumber (function)
+rawequal (function)
+setmetatable (function)
+getmetatable (function)
+rawget (function)
+collectgarbage (function)
+xpcall (function)
+rawset (function)
+assert (function)
+load (function)
+error (function)
+warn (function)
+type (function)
+dofile (function)
+ipairs (function)
+loadstring (function)`;
+
+        const parsedData = parseRealDump(DUMP_TEXT);
+        const apiData = flattenAPI(parsedData);
+        
+        console.log('Parsed API Data:', apiData);
+        console.log('Players entry:', apiData['players']);
+        console.log('Players.get entry:', apiData['players.get']);
+
+        let currentView = null;
+
+        function getTypeClass(type) {
+            return `type-${type}`;
+        }
+
+        function renderNavigation(filterText = '') {
+            const navList = document.getElementById('navList');
+            navList.innerHTML = '';
+            
+            let itemsToShow = Object.keys(apiData).sort();
+            
+            if (!filterText) {
+                // Show only top-level items
+                itemsToShow = itemsToShow.filter(key => !key.includes('.'));
+            } else {
+                // Filter by search text
+                itemsToShow = itemsToShow.filter(key => 
+                    key.toLowerCase().includes(filterText.toLowerCase())
+                );
+            }
+            
+            itemsToShow.forEach(key => {
+                const item = apiData[key];
+                
+                const navItem = document.createElement('div');
+                navItem.className = 'nav-item';
+                navItem.innerHTML = `
+                    <span class="type-badge ${getTypeClass(item.type)}">${item.type}</span>
+                    <span>${key}</span>
+                `;
+                navItem.addEventListener('click', () => showDetail(key));
+                navList.appendChild(navItem);
+            });
+        }
+
+        function showDetail(key) {
+            currentView = key;
+            const item = apiData[key];
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            const mainContent = document.getElementById('mainContent');
+            
+            let html = `
+                <div class="content-header">
+                    <div class="content-title">
+                        <span class="type-badge ${getTypeClass(item.type)}">${item.type}</span>
+                        ${key}
+                    </div>
+                    <div class="content-meta">${item.parent ? `Parent: ${item.parent}` : 'Global'}</div>
+                </div>
+            `;
+            
+            // Find children
+            const children = Object.keys(apiData).filter(k => 
+                apiData[k].parent === key
+            );
+            
+            if (children.length > 0) {
+                const funcs = children.filter(k => apiData[k].type === 'function');
+                const tables = children.filter(k => apiData[k].type === 'table');
+                const props = children.filter(k => !['function', 'table'].includes(apiData[k].type));
+                
+                if (funcs.length > 0) {
+                    html += `
+                        <div class="section">
+                            <div class="section-title">Functions (${funcs.length})</div>
+                            <div class="property-list">
+                                ${funcs.map(fn => `
+                                    <div class="property-item">
+                                        <div class="property-name">${fn}()</div>
+                                        <div class="property-type">Function</div>
+                                        <div class="property-value">${apiData[fn].value || ''}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (tables.length > 0) {
+                    html += `
+                        <div class="section">
+                            <div class="section-title">Sub-tables (${tables.length})</div>
+                            <div class="property-list">
+                                ${tables.map(tbl => {
+                                    const subChildren = Object.keys(apiData).filter(k => 
+                                        apiData[k].parent === tbl
+                                    ).length;
+                                    return `
+                                        <div class="property-item clickable" onclick="showDetail('${tbl}')">
+                                            <div class="property-name">${tbl}</div>
+                                            <div class="property-type">Table (${subChildren} items) → Click to view</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (props.length > 0) {
+                    html += `
+                        <div class="section">
+                            <div class="section-title">Properties (${props.length})</div>
+                            <div class="property-list">
+                                ${props.map(prop => `
+                                    <div class="property-item">
+                                        <div class="property-name">${apiData[prop].name}</div>
+                                        <div class="property-type">${apiData[prop].type}</div>
+                                        ${apiData[prop].value ? `<div class="property-value">${apiData[prop].value}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (item.type === 'function') {
+                html += `
+                    <div class="section">
+                        <div class="section-title">Function Details</div>
+                        <div class="property-item">
+                            <div class="property-name">Signature</div>
+                            <div class="property-value">${key}(...)</div>
+                        </div>
+                        ${item.value ? `
+                        <div class="property-item">
+                            <div class="property-name">Type</div>
+                            <div class="property-value">${item.value}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (item.value) {
+                html += `
+                    <div class="section">
+                        <div class="section-title">Value</div>
+                        <div class="property-item">
+                            <div class="property-value">${item.value}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            mainContent.innerHTML = html;
+        }
+
+        function showStats() {
+            const types = {};
+            Object.values(apiData).forEach(item => {
+                types[item.type] = (types[item.type] || 0) + 1;
+            });
+            
+            const statsHtml = Object.entries(types)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, count]) => `
+                    <div class="stat-item">
+                        <div class="stat-value">${count}</div>
+                        <div class="type-badge ${getTypeClass(type)}">${type}</div>
+                    </div>
+                `).join('');
+            
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderNavigation(e.target.value);
+        });
+        
+        window.showDetail = showDetail;
+
+        renderNavigation();
+        showStats();
+    </script>
+</body>
+</html>
